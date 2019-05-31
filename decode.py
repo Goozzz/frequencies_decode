@@ -46,19 +46,15 @@ def decode_text(text, language):
     alphabet_encode_text = {char: frequency for (char, frequency) in 
                     alphabet_encode_text.items() if char in alphabet}
     
-
+    #dictionary recovery for substitution
     char_to_char = dict()
-
-    for encode_char in alphabet_encode_text.keys():
+    for encode_char in alphabet_encode_text.keys(): 
         for char in alphabet.keys():
             if alphabet_encode_text[encode_char] == alphabet[char]:
                 char_to_char[encode_char] = char
                 alphabet_encode_text[encode_char] = -1
                 alphabet[char] = -1
                 
-
-    print(char_to_char)
-    print(len(char_to_char))
     decoded_text = ''
     for char in text:
         if char in alphabet:
