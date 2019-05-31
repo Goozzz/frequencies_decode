@@ -4,6 +4,7 @@ Module for text decoding.
 '''
 
 import textstatistics
+import random
 
 
 def encode_text(text, code):
@@ -18,8 +19,8 @@ def encode_text(text, code):
     for char in text:
         encoded_char = code.get(char, char)
         result.append(encoded_char)
-        
-    return  u''.join(result)
+
+    return u''.join(result)
 
 
 def evalutate_decoding(text, language):
@@ -40,26 +41,126 @@ def decode_text(text, language):
     '''
     Decodes the text encoded with a substitution cipher
     '''
-    
+    original_alphabet = list(u'абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
+
     alphabet = language.get_alphabet()
+    alphabet = {char: frequency for (char, frequency) in
+                alphabet.items()}
     alphabet_encode_text = textstatistics.get_char_frequencies(text)
-    alphabet_encode_text = {char: frequency for (char, frequency) in 
-                    alphabet_encode_text.items() if char in alphabet}
-    
-    #dictionary recovery for substitution
-    char_to_char = dict()
-    for encode_char in alphabet_encode_text.keys(): 
-        for char in alphabet.keys():
-            if alphabet_encode_text[encode_char] == alphabet[char]:
-                char_to_char[encode_char] = char
-                alphabet_encode_text[encode_char] = -1
-                alphabet[char] = -1
-                
+    alphabet_encode_text = {char: frequency for (char, frequency) in
+                            alphabet_encode_text.items() if char in original_alphabet}
+    dif_dict = {key: 0 for key in alphabet.keys()
+                    if key not in alphabet_encode_text.keys()}
+    alphabet_encode_text.update(dif_dict)
+
+    list_alphabet = list(alphabet.items())
+    list_alphabet.sort(key=lambda i: i[1])
+    list_alphabet_encode_text = list(alphabet_encode_text.items())
+    list_alphabet_encode_text.sort(key=lambda i: i[1])
+
+    char_to_char = {}
+    for (item_list_1, item_list_2) in zip(list_alphabet, list_alphabet_encode_text):
+        char_to_char[item_list_2[0]] = item_list_1[0]
+
     decoded_text = ''
     for char in text:
-        if char in alphabet:
+        if char in original_alphabet:
             decoded_text += char_to_char[char]
         else:
             decoded_text += char
-    
+
+    word_fitness = 0
+    list_word = textstatistics.split_to_words(decoded_text)
+    for word in list_word:
+        word_fitness += language.word_fitness(word)
+
+    if word_fitness == len(list_word) * 1.0:
+        return decoded_text
+    n = 0
+    while word_fitness != len(list_word) * 1.0:
+        decoded_text = ''
+        old_list = list_alphabet.copy()
+        n = 0
+        while n < 32:
+            n += 1
+            i = 0
+            old_list = list_alphabet.copy()
+            while i < len(list_alphabet) - 1:
+                if (i + n) > len(list_alphabet_encode_text) - 1:
+                    break
+                value = list_alphabet[i]
+                list_alphabet[i] = list_alphabet[i + n]
+                list_alphabet[i + n] = value
+
+                char_to_char = {}
+                for (item_list_1, item_list_2) in zip(list_alphabet, list_alphabet_encode_text):
+                    char_to_char[item_list_2[0]] = item_list_1[0]
+
+                decoded_text = ''
+                for char in text:
+                    if char in original_alphabet:
+                        decoded_text += char_to_char[char]
+                    else:
+                        decoded_text += char
+
+                new_word_fitness = 0
+                list_word = textstatistics.split_to_words(decoded_text)
+                for word in list_word:
+                    new_word_fitness += language.word_fitness(word)
+
+                if new_word_fitness > word_fitness:
+                    print(new_word_fitness, ' ', word_fitness)
+                    word_fitness = new_word_fitness
+                    old_list = list_alphabet.copy()
+                    i += 1
+                else:
+                    list_alphabet = old_list.copy()
+                    i += 1
+
+                if word_fitness == len(list_word) * 1.0:
+                    return decoded_text
+
+        decoded_text = ''
+        n = 0
+        while n < 32:
+            n += 1
+            i = 0
+            old_list = list_alphabet.copy()
+            while i > 0:
+                if (i + n) < 0:
+                    break
+                value = list_alphabet[i]
+                list_alphabet[i] = list_alphabet[i - n]
+                list_alphabet[i - n] = value
+
+                char_to_char = {}
+                for (item_list_1, item_list_2) in zip(list_alphabet, list_alphabet_encode_text):
+                    char_to_char[item_list_2[0]] = item_list_1[0]
+
+                decoded_text = ''
+                for char in text:
+                    if char in original_alphabet:
+                        decoded_text += char_to_char[char]
+                    else:
+                        decoded_text += char
+
+                new_word_fitness = 0
+                list_word = textstatistics.split_to_words(decoded_text)
+                for word in list_word:
+                    new_word_fitness += language.word_fitness(word)
+
+                if new_word_fitness > word_fitness:
+                    print(new_word_fitness, ' ', word_fitness)
+                    word_fitness = new_word_fitness
+                    old_list = list_alphabet.copy()
+                    i -= 1
+                else:
+                    list_alphabet = old_list.copy()
+                    i -= 1
+
+                if word_fitness == len(list_word) * 1.0:
+                    return decoded_text
+
+    print(text)
+    print(list_alphabet_encode_text)
     return decoded_text

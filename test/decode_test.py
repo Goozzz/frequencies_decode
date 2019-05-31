@@ -24,7 +24,7 @@ class TestDecodeText(unittest.TestCase):
 
         self.original_text = data.QUOTE_FROM_ILF_AND_PETROV
         alphabet = textstatistics.get_char_frequencies(self.original_text)
-        alphabet = {char: frequency for (char, frequency) in 
+        alphabet = {char: frequency  for (char, frequency) in 
                     alphabet.items() if char in original_alphabet}
         dictionary = textstatistics.get_word_frequencies(self.original_text)
         self.language = textstatistics.Languauge(alphabet, dictionary)
@@ -44,10 +44,10 @@ class TestDecodeText(unittest.TestCase):
     def test_decode_text_extract_rus(self):
         original_text_words = self.original_text.split()
         original_extract = ' '.join(
-                    original_text_words[: len(original_text_words) ])
+                    original_text_words[: len(original_text_words) // 2])
         
         encoded_extract = decode.encode_text(original_extract, self.code)
-
+        print(encoded_extract)
         decoded_extract = decode.decode_text(encoded_extract, self.language)
         self.assertEqual(original_extract, decoded_extract)
 
