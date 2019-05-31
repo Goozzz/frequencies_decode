@@ -47,7 +47,6 @@ class TestDecodeText(unittest.TestCase):
                     original_text_words[: len(original_text_words) // 2])
         
         encoded_extract = decode.encode_text(original_extract, self.code)
-        print(encoded_extract)
         decoded_extract = decode.decode_text(encoded_extract, self.language)
         self.assertEqual(original_extract, decoded_extract)
 

@@ -109,7 +109,6 @@ def decode_text(text, language):
                     new_word_fitness += language.word_fitness(word)
 
                 if new_word_fitness > word_fitness:
-                    print(new_word_fitness, ' ', word_fitness)
                     word_fitness = new_word_fitness
                     old_list = list_alphabet.copy()
                     i += 1
@@ -120,47 +119,4 @@ def decode_text(text, language):
                 if word_fitness == len(list_word) * 1.0:
                     return decoded_text
 
-        decoded_text = ''
-        n = 0
-        while n < 32:
-            n += 1
-            i = 0
-            old_list = list_alphabet.copy()
-            while i > 0:
-                if (i + n) < 0:
-                    break
-                value = list_alphabet[i]
-                list_alphabet[i] = list_alphabet[i - n]
-                list_alphabet[i - n] = value
-
-                char_to_char = {}
-                for (item_list_1, item_list_2) in zip(list_alphabet, list_alphabet_encode_text):
-                    char_to_char[item_list_2[0]] = item_list_1[0]
-
-                decoded_text = ''
-                for char in text:
-                    if char in original_alphabet:
-                        decoded_text += char_to_char[char]
-                    else:
-                        decoded_text += char
-
-                new_word_fitness = 0
-                list_word = textstatistics.split_to_words(decoded_text)
-                for word in list_word:
-                    new_word_fitness += language.word_fitness(word)
-
-                if new_word_fitness > word_fitness:
-                    print(new_word_fitness, ' ', word_fitness)
-                    word_fitness = new_word_fitness
-                    old_list = list_alphabet.copy()
-                    i -= 1
-                else:
-                    list_alphabet = old_list.copy()
-                    i -= 1
-
-                if word_fitness == len(list_word) * 1.0:
-                    return decoded_text
-
-    print(text)
-    print(list_alphabet_encode_text)
     return decoded_text
