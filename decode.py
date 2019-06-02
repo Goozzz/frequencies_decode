@@ -53,8 +53,10 @@ def decode_text(text, language):
                 if key not in alphabet_encode_text.keys()}
     alphabet_encode_text.update(dif_dict)
 
-    list_alphabet = list(alphabet.items())   
+    list_alphabet = list(alphabet.items())
+    list_alphabet.sort(key=lambda i: i[1]      
     list_alphabet_encode_text = list(alphabet_encode_text.items())
+    list_alphabet_encode_text.sort(key=lambda i: i[1]
 
     char_to_char = {}
     for (item_list_1, item_list_2) in zip(list_alphabet, list_alphabet_encode_text):
